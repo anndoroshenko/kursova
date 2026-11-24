@@ -1,0 +1,43 @@
+// Палітра
+$color-primary: #355A35;
+$color-primary-dark: #263F26;
+$color-olive: #899536;
+$color-cream: #F7EFCA;
+$color-yellow: #FFBA08;
+$color-yellow-light: #FBD569;
+$color-orange: #E85D04;
+$color-brown: #8C3703;
+$color-logo: #223A22;
+$color-white: #FFFFFF;
+
+// Текст і поля
+$color-text: #2F2A1E;
+$color-text-muted: #5E5640;
+$color-surface: #FFFBEA;
+$color-border: $color-yellow;
+$color-field-border: $color-primary;
+$color-focus: $color-brown;
+$color-error: #B3261E;
+$color-error-bg: #FDECEA;
+
+// Шрифти
+$font-body: 'Nunito', Arial, sans-serif;
+$font-heading: 'Playfair Display', Georgia, serif;
+
+// Відступи
+$space-xs: 0.5rem;
+$space-sm: 0.75rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+$space-2xl: 3rem;
+
+// Форма, тінь, розміри
+$radius-md: 0.5rem;
+$shadow-card: 0 2px 8px rgba(53, 90, 53, 0.15);
+$container-width: 75rem;
+$sidebar-width: 16rem;
+
+// Брейкпоїнти
+$bp-tablet: 48rem;
+$bp-desktop: 64rem;

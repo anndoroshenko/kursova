@@ -1,0 +1,20 @@
+@use "variables" as v;
+
+@mixin respond-from($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin focus-outline($color: v.$color-focus, $offset: 3px) {
+  outline: 3px solid $color;
+  outline-offset: $offset;
+}
+
+@mixin card-surface($padding: v.$space-lg) {
+  padding: $padding;
+  background: v.$color-surface;
+  border: 1px solid v.$color-border;
+  border-radius: v.$radius-md;
+  box-shadow: v.$shadow-card;
+}
