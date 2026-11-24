@@ -1,21 +1,40 @@
 import { defineStore } from 'pinia'
 import { fetchRecipes } from '../services/recipesApi.js'
-import { readFavoriteIds, writeFavoriteIds } from '../utils/storage.js'
+import { WEEK_DAYS, createEmptyPlan } from '../utils/weekdays.js'
+import {
+  readFavoriteIds, writeFavoriteIds,
+  readViewedIds, writeViewedIds,
+  readShoppingItems, writeShoppingItems,
+  readPlan, writePlan,
+} from '../utils/storage.js'
+
+const MAX_VIEWED = 20
 
 // Некоректні або недоступні дані сховища не повинні ламати застосунок
-function restoreFavoriteIds() {
+function restore(reader, fallback) {
   try {
-    return readFavoriteIds()
+    return reader()
   } catch (error) {
     console.error(error)
-    return []
+    return fallback()
+  }
+}
+
+function persist(writer, value) {
+  try {
+    writer(value)
+  } catch (error) {
+    console.error(error)
   }
 }
 
 export const useRecipesStore = defineStore('recipes', {
   state: () => ({
     items: [],
-    favoriteIds: restoreFavoriteIds(),
+    favoriteIds: restore(readFavoriteIds, () => []),
+    viewedIds: restore(readViewedIds, () => []),
+    shoppingItems: restore(readShoppingItems, () => []),
+    plan: restore(readPlan, createEmptyPlan),
     loading: false,
     error: '',
     hasLoaded: false,
@@ -24,21 +43,125 @@ export const useRecipesStore = defineStore('recipes', {
   getters: {
     favoriteCount: (state) => state.favoriteIds.length,
     isFavorite: (state) => (id) => state.favoriteIds.includes(id),
+
+    // Параметри URL і значення select приходять рядками, тому id порівнюємо як рядки
+    itemById: (state) => (id) =>
+      state.items.find((entry) => String(entry.id) === String(id)),
+
+    favoriteItems: (state) =>
+      state.items.filter((item) => state.favoriteIds.includes(item.id)),
+
+    viewedItems: (state) =>
+      state.viewedIds
+        .map((id) => state.items.find((item) => item.id === id))
+        .filter(Boolean),
+
+    shoppingLeft: (state) =>
+      state.shoppingItems.filter((entry) => !entry.done).length,
   },
 
   actions: {
+    // ---------- Обране ----------
     toggleFavorite(id) {
       this.favoriteIds = this.favoriteIds.includes(id)
         ? this.favoriteIds.filter((favoriteId) => favoriteId !== id)
         : [...this.favoriteIds, id]
 
-      try {
-        writeFavoriteIds(this.favoriteIds)
-      } catch (error) {
-        console.error(error)
+      persist(writeFavoriteIds, this.favoriteIds)
+    },
+
+    // ---------- Історія переглядів: останні зверху, без повторів ----------
+    addViewed(id) {
+      this.viewedIds = [id, ...this.viewedIds.filter((viewedId) => viewedId !== id)]
+        .slice(0, MAX_VIEWED)
+
+      persist(writeViewedIds, this.viewedIds)
+    },
+
+    clearViewed() {
+      this.viewedIds = []
+      persist(writeViewedIds, this.viewedIds)
+    },
+
+    // ---------- Список покупок ----------
+    // Повертає кількість доданих позицій (дублікати не додаються)
+    addIngredientsToShopping(recipe) {
+      const existing = new Set(this.shoppingItems.map((entry) => entry.text))
+      const added = recipe.ingredients
+        .filter((text) => !existing.has(text))
+        .map((text) => ({
+          id: `shop-${crypto.randomUUID()}`,
+          text,
+          done: false,
+        }))
+
+      if (added.length > 0) {
+        this.shoppingItems = [...this.shoppingItems, ...added]
+        persist(writeShoppingItems, this.shoppingItems)
+      }
+
+      return added.length
+    },
+
+    toggleShoppingItem(id) {
+      this.shoppingItems = this.shoppingItems.map((entry) =>
+        entry.id === id ? { ...entry, done: !entry.done } : entry
+      )
+      persist(writeShoppingItems, this.shoppingItems)
+    },
+
+    removeShoppingItem(id) {
+      this.shoppingItems = this.shoppingItems.filter((entry) => entry.id !== id)
+      persist(writeShoppingItems, this.shoppingItems)
+    },
+
+    clearShopping() {
+      this.shoppingItems = []
+      persist(writeShoppingItems, this.shoppingItems)
+    },
+
+    // ---------- Меню на тиждень ----------
+    setPlanDay(dayKey, value) {
+      this.plan = { ...this.plan, [dayKey]: value === '' ? null : Number(value) }
+      persist(writePlan, this.plan)
+    },
+
+    clearPlan() {
+      this.plan = createEmptyPlan()
+      persist(writePlan, this.plan)
+    },
+
+    // ---------- Очищення id, яких більше немає в каталозі ----------
+    cleanupMissingIds() {
+      const exists = (id) => this.items.some((item) => item.id === id)
+
+      const favorites = this.favoriteIds.filter(exists)
+      if (favorites.length !== this.favoriteIds.length) {
+        this.favoriteIds = favorites
+        persist(writeFavoriteIds, favorites)
+      }
+
+      const viewed = this.viewedIds.filter(exists)
+      if (viewed.length !== this.viewedIds.length) {
+        this.viewedIds = viewed
+        persist(writeViewedIds, viewed)
+      }
+
+      const plan = { ...this.plan }
+      let planChanged = false
+      WEEK_DAYS.forEach((day) => {
+        if (plan[day.key] !== null && !exists(plan[day.key])) {
+          plan[day.key] = null
+          planChanged = true
+        }
+      })
+      if (planChanged) {
+        this.plan = plan
+        persist(writePlan, plan)
       }
     },
 
+    // ---------- Завантаження каталогу ----------
     async loadItems(force = false) {
       if (this.loading) return
       if (this.hasLoaded && !force) return
@@ -49,21 +172,7 @@ export const useRecipesStore = defineStore('recipes', {
       try {
         this.items = await fetchRecipes()
         this.hasLoaded = true
-
-        // Прибираємо з обраного id, яких більше немає в каталозі
-        const existingIds = this.favoriteIds.filter((id) =>
-          this.items.some((item) => item.id === id)
-        )
-
-        if (existingIds.length !== this.favoriteIds.length) {
-          this.favoriteIds = existingIds
-
-          try {
-            writeFavoriteIds(existingIds)
-          } catch (error) {
-            console.error(error)
-          }
-        }
+        this.cleanupMissingIds()
       } catch (error) {
         this.items = []
         this.hasLoaded = false
