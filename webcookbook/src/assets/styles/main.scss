@@ -497,3 +497,106 @@ textarea.form-control {
     margin-bottom: v.$space-xs;
   }
 }
+// 9. Посилання-кнопки, стани, обране, деталі рецепта
+.button {
+  text-decoration: none;
+
+  &:hover {
+    color: v.$color-white;
+  }
+}
+
+.button-small {
+  padding: v.$space-xs v.$space-md;
+}
+
+.state-message {
+  font-weight: 600;
+  color: v.$color-text-muted;
+}
+
+.load-error {
+  > p {
+    margin: 0 0 v.$space-sm;
+  }
+}
+
+.filter-toggle {
+  margin-top: v.$space-md;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: v.$space-xs;
+
+  input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    accent-color: v.$color-primary;
+  }
+}
+
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: v.$space-xs;
+  margin-top: v.$space-xs;
+}
+
+.favorite-button {
+  padding: v.$space-xs v.$space-md;
+  border: 2px solid v.$color-primary;
+  border-radius: v.$radius-md;
+  font-weight: 700;
+  color: v.$color-primary;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: v.$color-yellow-light;
+  }
+
+  &.is-active {
+    color: v.$color-white;
+    background-color: v.$color-primary;
+
+    &:hover {
+      background-color: v.$color-primary-dark;
+    }
+  }
+}
+
+.favorites-counter {
+  margin: 0;
+  padding: v.$space-xs v.$space-md;
+  font-weight: 700;
+  text-align: center;
+  color: v.$color-logo;
+  background: v.$color-cream;
+  border-radius: v.$radius-md;
+}
+
+.recipe-detail {
+  max-width: 45rem;
+
+  > * {
+    margin-bottom: v.$space-sm;
+  }
+}
+
+.back-link {
+  display: inline-block;
+  font-weight: 700;
+}
+
+.detail-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 3px solid v.$color-yellow;
+  border-radius: v.$radius-md;
+  background-color: v.$color-yellow-light;
+}

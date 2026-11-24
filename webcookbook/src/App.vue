@@ -1,3 +1,9 @@
+<script setup>
+import { useRecipesStore } from './stores/recipes.js'
+
+const store = useRecipesStore()
+</script>
+
 <template>
   <div class="app-layout">
     <aside class="sidebar">
@@ -10,6 +16,10 @@
           <li><RouterLink class="nav-link" :to="{ name: 'my-recipes' }">Мої рецепти</RouterLink></li>
         </ul>
       </nav>
+
+      <p class="favorites-counter" aria-live="polite">
+        Обране: {{ store.favoriteCount }}
+      </p>
     </aside>
 
     <main class="page-content">
