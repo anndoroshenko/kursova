@@ -49,6 +49,21 @@ export const useRecipesStore = defineStore('recipes', {
       try {
         this.items = await fetchRecipes()
         this.hasLoaded = true
+
+        // Прибираємо з обраного id, яких більше немає в каталозі
+        const existingIds = this.favoriteIds.filter((id) =>
+          this.items.some((item) => item.id === id)
+        )
+
+        if (existingIds.length !== this.favoriteIds.length) {
+          this.favoriteIds = existingIds
+
+          try {
+            writeFavoriteIds(existingIds)
+          } catch (error) {
+            console.error(error)
+          }
+        }
       } catch (error) {
         this.items = []
         this.hasLoaded = false
