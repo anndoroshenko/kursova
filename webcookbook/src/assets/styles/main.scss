@@ -316,3 +316,158 @@ a {
   font-weight: 600;
   color: v.$color-text-muted;
 }
+// 7. Форма власних рецептів
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  border: 2px solid transparent;
+  border-radius: v.$radius-md;
+  font-weight: 700;
+  color: v.$color-white;
+  background-color: v.$color-primary;
+  cursor: pointer;
+
+  &:hover {
+    background-color: v.$color-primary-dark;
+    border-color: v.$color-yellow;
+  }
+}
+
+.card {
+  @include m.card-surface(v.$space-md);
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  @include m.respond-from(v.$bp-tablet) {
+    padding: v.$space-lg;
+  }
+}
+
+.request-form {
+  display: grid;
+  gap: v.$space-lg;
+  max-width: 45rem;
+  margin-top: v.$space-md;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.required-mark {
+  color: v.$color-error;
+}
+
+textarea.form-control {
+  resize: vertical;
+}
+
+.form-control:user-invalid {
+  border-color: v.$color-error;
+  background-color: v.$color-error-bg;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: v.$space-md;
+
+  @include m.respond-from(v.$bp-tablet) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.form-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: v.$color-text-muted;
+}
+
+.load-error {
+  margin: 0;
+  padding: v.$space-md;
+  font-weight: 600;
+  color: v.$color-error;
+  background-color: v.$color-error-bg;
+  border: 2px solid v.$color-error;
+  border-radius: v.$radius-md;
+}
+
+.user-message {
+  margin: v.$space-md 0;
+  font-weight: 600;
+  color: v.$color-primary;
+
+  &:empty {
+    margin: 0;
+  }
+}
+
+.subsection-title {
+  margin: v.$space-lg 0 v.$space-md;
+  font-size: 1.25rem;
+  color: v.$color-brown;
+}
+
+.user-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: v.$space-md;
+
+  @include m.respond-from(v.$bp-tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include m.respond-from(v.$bp-desktop) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-xs;
+  border: 3px solid v.$color-yellow;
+
+  > * {
+    margin: 0;
+  }
+}
+
+.user-card-category {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: v.$color-brown;
+}
+
+.user-card-title {
+  font-size: 1.125rem;
+  color: v.$color-primary;
+  overflow-wrap: anywhere;
+}
+
+.user-card-description {
+  overflow-wrap: anywhere;
+}
+
+.delete-button {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: v.$space-xs v.$space-md;
+  border: 2px solid v.$color-error;
+  border-radius: v.$radius-md;
+  font-weight: 700;
+  color: v.$color-error;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: v.$color-error-bg;
+  }
+}
