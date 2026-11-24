@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRecipesStore } from '../stores/recipes.js'
 import { CATEGORY_NAMES } from '../utils/categories.js'
@@ -7,16 +7,35 @@ import { CATEGORY_NAMES } from '../utils/categories.js'
 const route = useRoute()
 const store = useRecipesStore()
 
+const shoppingMessage = ref('')
+
 onMounted(() => store.loadItems())
 
 const isLoading = computed(
   () => store.loading || (!store.hasLoaded && !store.error)
 )
 
-// Параметри URL приходять рядками, тому id порівнюємо як рядки
-const item = computed(() =>
-  store.items.find((entry) => String(entry.id) === String(route.params.id))
+const item = computed(() => store.itemById(route.params.id))
+
+// Коли рецепт знайдено (або змінився id у маршруті), записуємо перегляд в історію
+watch(
+  item,
+  (value) => {
+    shoppingMessage.value = ''
+    if (value) {
+      store.addViewed(value.id)
+    }
+  },
+  { immediate: true }
 )
+
+function addToShopping() {
+  const added = store.addIngredientsToShopping(item.value)
+
+  shoppingMessage.value = added > 0
+    ? `Додано до списку покупок: ${added}.`
+    : 'Усі інгредієнти вже є у списку покупок.'
+}
 </script>
 
 <template>
@@ -53,6 +72,14 @@ const item = computed(() =>
           {{ ingredient }}
         </li>
       </ul>
+
+      <button class="button button-small" type="button" @click="addToShopping">
+        Додати інгредієнти до списку покупок
+      </button>
+      <p class="user-message" role="status">
+        {{ shoppingMessage }}
+        <RouterLink v-if="shoppingMessage" :to="{ name: 'shopping' }">Відкрити список</RouterLink>
+      </p>
 
       <h2 class="subsection-title">Приготування</h2>
       <ol class="feature-list">

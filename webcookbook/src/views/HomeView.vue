@@ -6,10 +6,9 @@ import RecipeList from '../components/RecipeList.vue'
 
 const store = useRecipesStore()
 
-// Пошук, категорія й прапорець залишаються локальним станом сторінки
+// Пошук і категорія залишаються локальним станом сторінки
 const query = ref('')
 const category = ref('all')
-const onlyFavorites = ref(false)
 
 onMounted(() => store.loadItems())
 
@@ -22,16 +21,9 @@ const filteredRecipes = computed(() => {
   const text = query.value.trim().toLowerCase()
   return store.items.filter((item) =>
     (category.value === 'all' || item.category === category.value) &&
-    (!onlyFavorites.value || store.isFavorite(item.id)) &&
     `${item.title} ${item.description}`.toLowerCase().includes(text)
   )
 })
-
-const emptyText = computed(() =>
-  onlyFavorites.value && !query.value.trim() && category.value === 'all'
-    ? 'В обраному поки немає рецептів.'
-    : 'Нічого не знайдено.'
-)
 </script>
 
 <template>
@@ -55,12 +47,6 @@ const emptyText = computed(() =>
       </div>
     </div>
 
-    <div class="choice filter-toggle">
-      <input id="only-favorites" v-model="onlyFavorites" type="checkbox"
-             :disabled="isLoading || !!store.error">
-      <label for="only-favorites">Лише обране</label>
-    </div>
-
     <h1 class="page-title">Рецепти</h1>
 
     <p v-if="isLoading" class="state-message" role="status">Завантаження…</p>
@@ -77,7 +63,7 @@ const emptyText = computed(() =>
         Знайдено рецептів: {{ filteredRecipes.length }}
       </p>
 
-      <p v-if="filteredRecipes.length === 0" class="empty-message">{{ emptyText }}</p>
+      <p v-if="filteredRecipes.length === 0" class="empty-message">Нічого не знайдено.</p>
       <RecipeList v-else :items="filteredRecipes" />
     </template>
   </section>
