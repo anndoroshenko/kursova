@@ -15,6 +15,7 @@ const store = useRecipesStore()
       <h3 class="recipe-name">{{ item.title }}</h3>
       <p class="recipe-description">{{ item.description }}</p>
       <p class="recipe-time">Час приготування: {{ item.time }} хв</p>
+      <p class="recipe-time">Калорійність: {{ item.kcal }} ккал на порцію</p>
 
       <div class="recipe-actions">
         <RouterLink class="button button-small"

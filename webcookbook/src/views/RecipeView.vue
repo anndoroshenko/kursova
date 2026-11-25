@@ -58,6 +58,11 @@ function addToShopping() {
       <h1 class="page-title">{{ item.title }}</h1>
       <p class="section-text">{{ item.description }}</p>
       <p class="recipe-time">Час приготування: {{ item.time }} хв</p>
+      <p class="recipe-time">
+        Порція: {{ item.portion }}. Калорійність: {{ item.kcal }} ккал
+        (білки {{ item.protein }} г, жири {{ item.fat }} г, вуглеводи {{ item.carbs }} г).
+        Значення орієнтовні.
+      </p>
 
       <button class="favorite-button" type="button"
               :class="{ 'is-active': store.isFavorite(item.id) }"
