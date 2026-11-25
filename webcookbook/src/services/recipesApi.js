@@ -11,6 +11,10 @@ function isStringList(value) {
   return Array.isArray(value) && value.length > 0 && value.every(isNonEmptyString)
 }
 
+function isNonNegativeNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+}
+
 // Дозволено лише локальні шляхи на зразок "images/recipes/pngn1.png".
 function isLocalImagePath(path) {
   return (
@@ -49,8 +53,21 @@ function validateRecipes(data) {
     if (!isLocalImagePath(item.image)) {
       throw new Error(`${label}: image має бути локальним шляхом`)
     }
-    if (typeof item.time !== 'number' || !Number.isFinite(item.time) || item.time < 0) {
+    if (!isNonNegativeNumber(item.time)) {
       throw new Error(`${label}: time має бути невід’ємним числом`)
+    }
+    if (!isNonEmptyString(item.portion)) {
+      throw new Error(`${label}: portion має бути непорожнім рядком`)
+    }
+    if (!isNonNegativeNumber(item.kcal) || item.kcal === 0) {
+      throw new Error(`${label}: kcal має бути додатним числом`)
+    }
+    if (
+      !isNonNegativeNumber(item.protein) ||
+      !isNonNegativeNumber(item.fat) ||
+      !isNonNegativeNumber(item.carbs)
+    ) {
+      throw new Error(`${label}: protein, fat і carbs мають бути невід’ємними числами`)
     }
     if (!isStringList(item.ingredients)) {
       throw new Error(`${label}: ingredients має бути непорожнім списком рядків`)
@@ -70,6 +87,11 @@ function normalizeRecipe(raw) {
     description: raw.description.trim(),
     image: `${import.meta.env.BASE_URL}${raw.image}`,
     time: raw.time,
+    portion: raw.portion.trim(),
+    kcal: raw.kcal,
+    protein: raw.protein,
+    fat: raw.fat,
+    carbs: raw.carbs,
     ingredients: raw.ingredients,
     steps: raw.steps,
   }

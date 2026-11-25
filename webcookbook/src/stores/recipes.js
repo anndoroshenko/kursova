@@ -1,14 +1,18 @@
 import { defineStore } from 'pinia'
 import { fetchRecipes } from '../services/recipesApi.js'
 import { WEEK_DAYS, createEmptyPlan } from '../utils/weekdays.js'
+import { calculateNorm } from '../utils/calories.js'
 import {
   readFavoriteIds, writeFavoriteIds,
   readViewedIds, writeViewedIds,
   readShoppingItems, writeShoppingItems,
   readPlan, writePlan,
+  readProfile, writeProfile,
+  readDiary, writeDiary,
 } from '../utils/storage.js'
 
 const MAX_VIEWED = 20
+const MAX_PLAN_PER_DAY = 10
 
 // Некоректні або недоступні дані сховища не повинні ламати застосунок
 function restore(reader, fallback) {
@@ -35,6 +39,8 @@ export const useRecipesStore = defineStore('recipes', {
     viewedIds: restore(readViewedIds, () => []),
     shoppingItems: restore(readShoppingItems, () => []),
     plan: restore(readPlan, createEmptyPlan),
+    profile: restore(readProfile, () => null),
+    diary: restore(readDiary, () => []),
     loading: false,
     error: '',
     hasLoaded: false,
@@ -58,6 +64,42 @@ export const useRecipesStore = defineStore('recipes', {
 
     shoppingLeft: (state) =>
       state.shoppingItems.filter((entry) => !entry.done).length,
+
+    // Добова норма: null, доки користувач не зберіг профіль
+    dailyNorm: (state) => (state.profile ? calculateNorm(state.profile) : null),
+
+    // Записи щоденника разом із рецептом і підрахованими поживними речовинами
+    diaryRows: (state) =>
+      state.diary
+        .map((entry) => {
+          const recipe = state.items.find((item) => item.id === entry.recipeId)
+
+          if (!recipe) {
+            return null
+          }
+
+          return {
+            ...entry,
+            recipe,
+            kcal: recipe.kcal * entry.portions,
+            protein: recipe.protein * entry.portions,
+            fat: recipe.fat * entry.portions,
+            carbs: recipe.carbs * entry.portions,
+          }
+        })
+        .filter(Boolean),
+
+    diaryTotals() {
+      return this.diaryRows.reduce(
+        (sum, row) => ({
+          kcal: sum.kcal + row.kcal,
+          protein: sum.protein + row.protein,
+          fat: sum.fat + row.fat,
+          carbs: sum.carbs + row.carbs,
+        }),
+        { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+      )
+    },
   },
 
   actions: {
@@ -120,15 +162,55 @@ export const useRecipesStore = defineStore('recipes', {
       persist(writeShoppingItems, this.shoppingItems)
     },
 
-    // ---------- Меню на тиждень ----------
-    setPlanDay(dayKey, value) {
-      this.plan = { ...this.plan, [dayKey]: value === '' ? null : Number(value) }
+    // ---------- Меню на тиждень: кілька страв на день ----------
+    // Повертає true, якщо страву додано
+    addPlanItem(dayKey, recipeId) {
+      const dayItems = this.plan[dayKey]
+
+      if (!dayItems || dayItems.includes(recipeId) || dayItems.length >= MAX_PLAN_PER_DAY) {
+        return false
+      }
+
+      this.plan = { ...this.plan, [dayKey]: [...dayItems, recipeId] }
+      persist(writePlan, this.plan)
+      return true
+    },
+
+    removePlanItem(dayKey, recipeId) {
+      this.plan = {
+        ...this.plan,
+        [dayKey]: this.plan[dayKey].filter((id) => id !== recipeId),
+      }
       persist(writePlan, this.plan)
     },
 
     clearPlan() {
       this.plan = createEmptyPlan()
       persist(writePlan, this.plan)
+    },
+
+    // ---------- Калорійний калькулятор ----------
+    saveProfile(profile) {
+      this.profile = { ...profile }
+      persist(writeProfile, this.profile)
+    },
+
+    addDiaryEntry({ recipeId, meal, portions }) {
+      this.diary = [
+        ...this.diary,
+        { id: `log-${crypto.randomUUID()}`, recipeId, meal, portions },
+      ]
+      persist(writeDiary, this.diary)
+    },
+
+    removeDiaryEntry(id) {
+      this.diary = this.diary.filter((entry) => entry.id !== id)
+      persist(writeDiary, this.diary)
+    },
+
+    clearDiary() {
+      this.diary = []
+      persist(writeDiary, this.diary)
     },
 
     // ---------- Очищення id, яких більше немає в каталозі ----------
@@ -147,11 +229,17 @@ export const useRecipesStore = defineStore('recipes', {
         persist(writeViewedIds, viewed)
       }
 
-      const plan = { ...this.plan }
+      const diary = this.diary.filter((entry) => exists(entry.recipeId))
+      if (diary.length !== this.diary.length) {
+        this.diary = diary
+        persist(writeDiary, diary)
+      }
+
+      const plan = {}
       let planChanged = false
       WEEK_DAYS.forEach((day) => {
-        if (plan[day.key] !== null && !exists(plan[day.key])) {
-          plan[day.key] = null
+        plan[day.key] = this.plan[day.key].filter(exists)
+        if (plan[day.key].length !== this.plan[day.key].length) {
           planChanged = true
         }
       })

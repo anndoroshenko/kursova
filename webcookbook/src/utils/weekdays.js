@@ -8,7 +8,7 @@ export const WEEK_DAYS = [
   { key: 'sun', name: 'Неділя' },
 ]
 
-// Порожнє меню: для кожного дня id рецепта або null
+// Порожнє меню: для кожного дня список id рецептів
 export function createEmptyPlan() {
-  return Object.fromEntries(WEEK_DAYS.map((day) => [day.key, null]))
+  return Object.fromEntries(WEEK_DAYS.map((day) => [day.key, []]))
 }
