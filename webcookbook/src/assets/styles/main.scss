@@ -748,3 +748,272 @@ textarea.form-control {
     color: v.$color-primary;
   }
 }
+// 11. Калькулятори та меню на тиждень
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-xs;
+  margin: v.$space-md 0 v.$space-lg;
+}
+
+.tab-button {
+  padding: 0.625rem 1.25rem;
+  border: 2px solid v.$color-primary;
+  border-radius: v.$radius-md;
+  font-weight: 700;
+  color: v.$color-primary;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background-color: v.$color-yellow-light;
+  }
+
+  &.is-active {
+    color: v.$color-white;
+    background-color: v.$color-primary;
+
+    &:hover {
+      background-color: v.$color-primary-dark;
+    }
+  }
+}
+
+.calc-panel {
+  max-width: 45rem;
+}
+
+.calc-fieldset {
+  min-width: 0;
+  margin: 0 0 v.$space-md;
+  padding: 0;
+  border: 0;
+}
+
+.calc-legend {
+  margin-bottom: v.$space-xs;
+  padding: 0;
+  font-family: v.$font-heading;
+  font-weight: 700;
+  color: v.$color-brown;
+}
+
+.calc-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-md;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: v.$space-md;
+  margin-bottom: v.$space-md;
+
+  @include m.respond-from(v.$bp-tablet) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.result-box {
+  margin: v.$space-md 0;
+  padding: v.$space-lg;
+  background: v.$color-surface;
+  border: 3px solid v.$color-yellow;
+  border-radius: v.$radius-md;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.result-main {
+  margin: 0 0 v.$space-xs;
+  font-family: v.$font-heading;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: v.$color-brown;
+}
+
+.result-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: v.$color-text-muted;
+}
+
+.progress {
+  display: block;
+  width: 100%;
+  height: 1.25rem;
+  margin: v.$space-sm 0;
+  accent-color: v.$color-primary;
+
+  &.is-over {
+    accent-color: v.$color-error;
+  }
+}
+
+.is-ok {
+  font-weight: 700;
+  color: v.$color-primary;
+}
+
+.is-over-norm {
+  font-weight: 700;
+  color: v.$color-error;
+}
+
+.diary-meal {
+  margin-bottom: v.$space-lg;
+}
+
+.diary-meal-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: v.$space-xs;
+  margin: 0 0 v.$space-xs;
+  padding-bottom: v.$space-xs;
+  font-size: 1.125rem;
+  color: v.$color-primary;
+  border-bottom: 3px solid v.$color-yellow;
+}
+
+.diary-meal-total {
+  color: v.$color-brown;
+}
+
+.diary-list {
+  margin: 0 0 v.$space-sm;
+  padding: 0;
+  list-style: none;
+}
+
+.diary-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: v.$space-sm;
+  padding: v.$space-sm 0;
+  border-bottom: 1px solid v.$color-yellow;
+
+  .delete-button {
+    margin-top: 0;
+  }
+}
+
+.diary-row-text {
+  flex: 1 1 12rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: v.$space-md;
+  margin-bottom: v.$space-md;
+
+  @include m.respond-from(v.$bp-desktop) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: v.$space-lg;
+  }
+}
+
+.planner-day-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-xs;
+  border: 3px solid v.$color-yellow;
+
+  > * {
+    margin: 0;
+  }
+}
+
+.planner-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: v.$space-xs;
+  margin-top: v.$space-xs;
+
+  @include m.respond-from(v.$bp-tablet) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+.planner-total {
+  margin-top: v.$space-xs;
+  font-weight: 700;
+  color: v.$color-brown;
+}
+// 12. Порівняння рецептів та сторінка «Про сайт»
+.compare-wrapper {
+  max-width: 56rem;
+}
+
+.compare-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$space-xs;
+  margin-bottom: v.$space-md;
+
+  .button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.compare-link {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.best-cell {
+  font-weight: 700;
+  background: v.$color-yellow-light;
+}
+
+.best-mark {
+  margin-left: 0.25rem;
+  color: v.$color-primary;
+}
+
+.compare-note {
+  max-width: 56rem;
+  margin-top: v.$space-sm;
+}
+
+.verdict-list {
+  margin: 0;
+  padding-left: v.$space-lg;
+}
+
+.compare-lists {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: v.$space-md;
+  max-width: 56rem;
+
+  @include m.respond-from(v.$bp-desktop) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.about-group {
+  margin-bottom: v.$space-md;
+}
+
+.about-group-title {
+  margin: v.$space-md 0 v.$space-xs;
+  font-size: 1.0625rem;
+  color: v.$color-brown;
+}
+
+.extra-details {
+  max-width: 50rem;
+}

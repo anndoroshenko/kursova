@@ -7,6 +7,7 @@ import FavoritesView from '../views/FavoritesView.vue'
 import CategoriesView from '../views/CategoriesView.vue'
 import CategoryView from '../views/CategoryView.vue'
 import RandomView from '../views/RandomView.vue'
+import CalculatorView from '../views/CalculatorView.vue'
 import QuickView from '../views/QuickView.vue'
 import IngredientSearchView from '../views/IngredientSearchView.vue'
 import ShoppingView from '../views/ShoppingView.vue'
@@ -27,6 +28,7 @@ export const router = createRouter({
     { path: '/categories', name: 'categories', component: CategoriesView },
     { path: '/categories/:key', name: 'category', component: CategoryView },
     { path: '/random', name: 'random', component: RandomView },
+    { path: '/calculator', name: 'calculator', component: CalculatorView },
     { path: '/quick', name: 'quick', component: QuickView },
     { path: '/by-ingredient', name: 'by-ingredient', component: IngredientSearchView },
     { path: '/shopping', name: 'shopping', component: ShoppingView },

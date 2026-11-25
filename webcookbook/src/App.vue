@@ -17,6 +17,7 @@ const store = useRecipesStore()
           <li><RouterLink class="nav-link" :to="{ name: 'quick' }">Швидкі рецепти</RouterLink></li>
           <li><RouterLink class="nav-link" :to="{ name: 'by-ingredient' }">Пошук за інгредієнтом</RouterLink></li>
           <li><RouterLink class="nav-link" :to="{ name: 'random' }">Що приготувати?</RouterLink></li>
+          <li><RouterLink class="nav-link" :to="{ name: 'calculator' }">Кулінарний калькулятор</RouterLink></li>
           <li><RouterLink class="nav-link" :to="{ name: 'favorites' }">Обране</RouterLink></li>
           <li><RouterLink class="nav-link" :to="{ name: 'my-recipes' }">Мої рецепти</RouterLink></li>
           <li><RouterLink class="nav-link" :to="{ name: 'shopping' }">Список покупок</RouterLink></li>
